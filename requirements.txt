@@ -37,7 +37,7 @@ cloudpickle==1.2.0
 fastai
 pillow==6.0.0
 python-dotenv
-ray[all]==0.8.0
+ray[all]==0.8.2
 requests
 scikit-image
 seaborn>=0.9.0

@@ -21,6 +21,7 @@ sdist/
 var/
 wheels/
 *.egg-info/
+pip-wheel-metadata/
 .installed.cfg
 *.egg
 MANIFEST
@@ -102,16 +103,14 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-.idea
-/projects/ray_tune_example/mnist/results
-/projects/whydense/cifar/data
+
+# IDE
+.idea/
+.vscode/
+
+# MacOS
 .DS_Store
-/projects/ray_tune_example/mnist/data
-/projects/whydense/cifar/results
+
+# Domino
 .domino*
 domino*
-/projects/whydense/cifar/results1
-
-# local scripts
-cleancode.sh
-checkcode.sh
