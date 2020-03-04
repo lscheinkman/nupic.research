@@ -102,8 +102,8 @@ DEFAULT = dict(
     # See https://arxiv.org/pdf/1706.02677.pdf
     init_batch_norm=False,
 
-    # Loss function. See "torch.nn.functional"
-    loss_function=torch.nn.functional.cross_entropy,
+    # Loss function. Must inherit from "torch.nn.modules.loss._Loss"
+    loss_function=torch.nn.CrossEntropyLoss,
 
     # How often to checkpoint (epochs)
     checkpoint_freq=0,
