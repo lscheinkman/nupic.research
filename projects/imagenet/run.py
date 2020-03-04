@@ -62,6 +62,11 @@ if __name__ == "__main__":
                         help="How often to checkpoint (epochs)")
     parser.add_argument("--profile", action="store_true",
                         help="Enable torch.autograd.profiler.profile during training")
+    parser.add_argument("--raysgd", action="store_true",
+                        help="Train using RaySGD")
+    parser.add_argument("--affinity", action="store_true",
+                        help="Group trial into nodes as much as possible")
+
     parser.add_argument(
         "-a", "--redis-address",
         default="{}:6379".format(socket.gethostbyname(socket.gethostname())),

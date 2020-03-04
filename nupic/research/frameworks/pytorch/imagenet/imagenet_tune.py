@@ -25,6 +25,9 @@ from pprint import pprint
 
 import ray
 import ray.resource_spec
+from .imagenet_raysgd import (
+    ImagenetRaySGDTrainable
+)
 from ray import ray_constants
 from ray.exceptions import RayTimeoutError
 from ray.tune import Trainable, tune
@@ -318,9 +321,13 @@ def run(config):
     address = os.environ.get("REDIS_ADDRESS", config.get("redis_address"))
     ray.init(address=address)
 
+    # Select trainable class
+    use_raysgd = config.get("raysgd", False)
+    trainable_class = ImagenetTrainable if use_raysgd else ImagenetRaySGDTrainable
+
     # Build kwargs for `tune.run` function using merged config and command line dict
     kwargs_names = tune.run.__code__.co_varnames[:tune.run.__code__.co_argcount]
-    kwargs = dict(zip(kwargs_names, [ImagenetTrainable, *tune.run.__defaults__]))
+    kwargs = dict(zip(kwargs_names, [trainable_class, *tune.run.__defaults__]))
 
     # Update`tune.run` kwargs with config
     kwargs.update(config)
@@ -339,11 +346,13 @@ def run(config):
     kwargs.update(queue_trials=True)
 
     # Group trial into nodes as much as possible
-    kwargs.update(trial_executor=AffinityExecutor(
-        queue_trials=kwargs.get("queue_trials", True),
-        reuse_actors=kwargs.get("reuse_actors", False),
-        ray_auto_init=kwargs.get("ray_auto_init", True)
-    ))
+    use_affinity = config.get("affinity", False)
+    if use_affinity:
+        kwargs.update(trial_executor=AffinityExecutor(
+            queue_trials=kwargs.get("queue_trials", True),
+            reuse_actors=kwargs.get("reuse_actors", False),
+            ray_auto_init=kwargs.get("ray_auto_init", True)
+        ))
 
     pprint(kwargs)
     tune.run(**kwargs)
