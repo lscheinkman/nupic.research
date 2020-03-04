@@ -34,7 +34,7 @@ def train_model(
     model,
     loader,
     optimizer,
-    device,
+    device=None,
     criterion=F.nll_loss,
     batches_in_epoch=sys.maxsize,
     pre_batch_callback=None,
@@ -70,6 +70,9 @@ def train_model(
     :return: mean loss for epoch
     :rtype: float
     """
+    if device is None:
+        device = next(model.parameters()).device
+
     model.train()
     # Use asynchronous GPU copies when the memory is pinned
     # See https://pytorch.org/docs/master/notes/cuda.html
@@ -137,7 +140,7 @@ def train_model(
 def evaluate_model(
     model,
     loader,
-    device,
+    device=None,
     batches_in_epoch=sys.maxsize,
     criterion=F.nll_loss,
     progress=None,
@@ -160,6 +163,9 @@ def evaluate_model(
     :return: dictionary with computed "mean_accuracy", "mean_loss", "total_correct".
     :rtype: dict
     """
+    if device is None:
+        device = next(model.parameters()).device
+
     model.eval()
     loss = 0
     correct = 0

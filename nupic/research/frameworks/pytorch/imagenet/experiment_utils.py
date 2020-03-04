@@ -245,6 +245,7 @@ def create_optimizer(model, optimizer_class, optimizer_args,
 
     :return: Configured optimizer
     """
+    optimizer_args = optimizer_args or {}
     if batch_norm_weight_decay:
         # No need to remove weight decay. Use same optimizer args for all parameters
         model_params = model.parameters()
@@ -290,6 +291,7 @@ def create_lr_scheduler(optimizer, lr_scheduler_class, lr_scheduler_args,
         Only used if lr_scheduler_class is :class:`ComposedLRScheduler` or
         :class:`OneCycleLR`
     """
+    lr_scheduler_args = lr_scheduler_args or {}
     if issubclass(lr_scheduler_class, OneCycleLR):
         # Update OneCycleLR parameters
         lr_scheduler_args = copy.deepcopy(lr_scheduler_args)
@@ -341,7 +343,7 @@ def init_resnet50_batch_norm(model):
             m.weight.data.normal_(0, 0.01)
 
 
-def create_model(model_class, model_args, init_batch_norm, device,
+def create_model(model_class, model_args, init_batch_norm, device=None,
                  checkpoint_file=None, init_hooks=None):
     """
     Create imagenet experiment model with option to load state from checkpoint
@@ -359,10 +361,12 @@ def create_model(model_class, model_args, init_batch_norm, device,
 
     :return: Configured model
     """
+    model_args = model_args or {}
     model = model_class(**model_args)
     if init_batch_norm:
         init_resnet50_batch_norm(model)
-    model.to(device)
+    if device:
+        model.to(device)
 
     # Load model parameters from checkpoint
     if checkpoint_file is not None:
