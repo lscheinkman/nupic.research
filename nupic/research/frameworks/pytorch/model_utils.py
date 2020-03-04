@@ -167,8 +167,8 @@ def evaluate_model(
         device = next(model.parameters()).device
 
     model.eval()
-    loss = 0
-    correct = 0
+    loss = torch.tensor(0.0)
+    correct = torch.tensor(0.0)
     total = 0
     async_gpu = loader.pin_memory
 
@@ -183,18 +183,18 @@ def evaluate_model(
             target = target.to(device, non_blocking=async_gpu)
 
             output = model(data)
-            loss += criterion(output, target, reduction="sum").item()
+            loss += criterion(output, target, reduction="sum")
             pred = output.max(1, keepdim=True)[1]
-            correct += pred.eq(target.view_as(pred)).sum().item()
+            correct += pred.eq(target.view_as(pred)).sum()
             total += len(data)
 
     if progress is not None:
         loader.close()
 
     return {
-        "total_correct": correct,
-        "mean_loss": loss / total if total > 0 else 0,
-        "mean_accuracy": correct / total if total > 0 else 0,
+        "total_correct": correct.item(),
+        "mean_loss": loss.item() / total if total > 0 else 0,
+        "mean_accuracy": correct.item() / total if total > 0 else 0,
     }
 
 
